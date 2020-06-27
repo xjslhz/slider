@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .box {}
+
+        .box .slider-box {
+            width: 160px;
+            height: 4px;
+            background: rgba(210, 206, 206, .6);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .box .slider-box .move-silder {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 0px;
+            height: 4px;
+            background: red;
+            border-radius: 4px;
+            z-index: 2;
+        }
+
+        .box .slider-box .move-silder .dots {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            margin-top: -6px;
+            left: 0px;
+            margin-left: -7px;
+            background: greenyellow;
+            box-shadow: 1px 1px 1px 1px rgba(184, 184, 184, .4);
+            z-index: 3;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 视图 V views -->
+    <div id='app'>
+        <slider></slider>
+
+
+    </div>
+
+    <!-- 调度者 MV ViewModel  -->
+    <script src='./vue.js'></script>
+
+
+    <!-- 模型 M Model -->
+    <script>
+        Vue.component('slider', {
+            template: `
+            <div class="box" ref='sildeBox'>
+                <div class="slider-box" ref="mySlider"  @touchstart='getPointStart '>
+                    <div class="move-silder" ref='myMove'>
+                        <div class="dots" ref='bar' 
+                        @touchmove='getPointMove'
+                        @touchend="end"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+            `,
+            data() {
+                return {
+
+                }
+            },
+            cerated(){
+                this.$nextTick(()=>{
+                    this.sildeBox =this.$refs.sildeBox;
+                })
+            },
+            methods: {
+                //按下位置
+                getPointStart(e) {
+                    // console.log("e==>", e)
+                    let x1 = e.targetTouches[0].pageX;
+
+                    console.log('按下的初始位置==》',x1);
+                   
+                    //开始位置
+                    let x0 = this.$refs.sildeBox.offsetLeft;
+
+                    //滑动的距离
+                    let moveX = x1 - x0;
+
+                    //圆圈移动的位置
+                    this.$refs.bar.style.left = moveX + 'px';
+                    //红色的位置
+                    this.$refs.myMove.style.width = moveX + 'px';
+
+
+                },
+                //移动事件
+                getPointMove(e) {
+                    // console.log("e",e);
+                    let x1 = e.touches[0].pageX;
+                    console.log('移动的==》', x1);
+                    //获取宽度
+                    let W = this.$refs.mySlider.clientWidth;
+
+                    //开始位置
+                    let x0 = this.$refs.mySlider.offsetLeft;
+                    //滑动的距离
+                    let moveX = x1 - x0;
+                    console.log('移动的距离==》', moveX);
+                    if (moveX < 0) {
+                        return;
+                    } else if (moveX > W) {
+                        return;
+
+                    } else {
+                        //圆圈移动的位置
+                        this.$refs.bar.style.left = moveX + 'px';
+                        //红色的位置
+                        this.$refs.myMove.style.width = moveX + 'px';
+                    }
+                },
+                
+                end(){
+                    
+                }
+            }
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                msg: '欢迎来到vue.js学习',
+
+            },
+            methods: {
+
+            },
+
+        })
+    </script>
+</body>
+
+</html>
